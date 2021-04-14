@@ -1,0 +1,35 @@
+name: PhpCsFixer
+
+# on:
+#   push:
+#     branches: [staging/master]
+#   pull_request: # フェーズ3ではプルリク作成時に実行
+#     types: [opened]
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  php_cs_fixer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.head_ref}}
+      - name: Setup PHP with tools
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+          tools: php-cs-fixer
+      - name: execute php-cs-fixer
+        run: |
+          git diff --name-only origin/${{github.base_ref}}..${{github.head_ref}} | \
+          grep '.php$' | grep -v '^manage/views' | \
+          xargs -n 1 ./vendor/bin/php-cs-fixer fix --using-cache=no
+      - name: Commit and push
+        uses: stefanzweifel/git-auto-commit-action@v4.2.0
+        with:
+          commit_message: pxp-cs-fixer by Github Actions
