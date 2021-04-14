@@ -26,11 +26,14 @@ jobs:
           tools: php-cs-fixer
       - name: PHP syntax check
         run: |
-          find src/ -type f -name '*.php' -print0 | \
+          git diff --name-only origin/master..HEAD| \
+          grep '.php$' | grep -v '^manage/views' | \
           xargs -0 -L1 -P4 -- php -l -f
       - name: execute php-cs-fixer
         run: |
-          php-cs-fixer fix --config=.php_cs --using-cache=no
+          git diff --name-only origin/master..HEAD| \
+          grep '.php$' | grep -v '^manage/views' | \
+          xargs -n 1 php-cs-fixer fix --config=.php_cs --using-cache=no
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
