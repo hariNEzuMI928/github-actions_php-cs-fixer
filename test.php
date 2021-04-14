@@ -1,5 +1,7 @@
 <?php
 
-if (true) {
-    echo '123456';
+if
+(true)         {
+
+    echo '1234567';
 }
