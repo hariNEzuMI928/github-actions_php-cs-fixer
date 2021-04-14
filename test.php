@@ -3,5 +3,5 @@
 if
 (true)         {
 
-    echo '';
+    echo '12';
 }
