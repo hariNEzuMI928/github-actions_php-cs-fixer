@@ -8,9 +8,9 @@ name: PhpCsFixer
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   php_cs_fixer:
