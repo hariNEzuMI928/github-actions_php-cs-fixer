@@ -24,11 +24,6 @@ jobs:
         with:
           php-version: "7.4"
           tools: php-cs-fixer
-      - name: PHP syntax check
-        run: |
-          git diff --name-only origin/master..HEAD| \
-          grep '.php$' | grep -v '^manage/views' | \
-          xargs -0 -L1 -P4 -- php -l -f
       - name: execute php-cs-fixer
         run: |
           git diff --name-only origin/master..HEAD| \
