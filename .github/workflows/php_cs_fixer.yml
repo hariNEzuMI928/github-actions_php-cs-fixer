@@ -33,7 +33,7 @@ jobs:
         run: |
           git diff --name-only --diff-filter=ACMR origin/master..HEAD *.php | \
           grep -v '^manage/views' | \
-          xargs -n1 -P4 php-cs-fixer fix --using-cache=no
+          xargs -n1 -P4 ./vendor/bin/php-cs-fixer fix --using-cache=no
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
