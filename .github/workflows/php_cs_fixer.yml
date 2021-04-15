@@ -27,7 +27,7 @@ jobs:
       - name: check syntax error
         run: |
           if git diff --name-only --diff-filter=ACMR origin/master..HEAD -- '*.php' | \
-          xargs -n1 -P4 php -lf | \
+          xargs -n1 -P4 php -l | \
           grep -v "No syntax errors detected"; then exit 1; fi
       - name: execute php-cs-fixer
         run: |
