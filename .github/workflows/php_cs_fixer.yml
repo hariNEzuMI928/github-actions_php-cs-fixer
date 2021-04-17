@@ -31,9 +31,13 @@ jobs:
           grep -v "No syntax errors detected"; then exit 1; fi
       - name: execute php-cs-fixer
         run: |
-          git diff --name-only --diff-filter=ACMR origin/master..HEAD *.php | \
-          grep -v '^manage/views' | \
-          xargs -L1 -P4 ./vendor/bin/php-cs-fixer fix --using-cache=no
+          DETECTED_FILES=`git diff --name-only --diff-filter=ACMR origin/master..HEAD *.php | grep -v '^manage/views' 2>/dev/null`
+          if [ -z "${DETECTED_FILES}" ]
+          then
+            echo "No PHP files to check in current commit, all is well."
+            exit 0
+          fi
+          php-cs-fixer fix --using-cache=no `echo ${DETECTED_FILES} | xargs ls -d`
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
