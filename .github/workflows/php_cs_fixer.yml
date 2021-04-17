@@ -24,16 +24,20 @@ jobs:
         with:
           php-version: "7.4"
           tools: php-cs-fixer
+      - name: List modified PHP files
+        id: diff
+        run: |
+          git diff --name-only --diff-filter=ACMR origin/master..HEAD -- '*.php' > git_diff_php_files.txt
+          echo "::set-output name=diff::$(cat git_diff_php_files.txt)"
       - name: check syntax error
         run: |
           if git diff --name-only --diff-filter=ACMR origin/master..HEAD -- '*.php' | \
           xargs -n1 -P4 php -l | \
           grep -v "No syntax errors detected"; then exit 1; fi
-      - name: execute php-cs-fixer
-        run: |
-          git diff --name-only --diff-filter=ACMR origin/master..HEAD *.php | \
-          grep -v '^manage/views' | \
-          xargs -L1 -P4 php-cs-fixer fix --using-cache=no
+      - name: "Run PHPCSFixer checks"
+        run: if [ "$DIFF" != '' ]; then php php-cs-fixer fix --using-cache=no; fi
+        env:
+          DIFF: ${{ steps.diff.outputs.diff }}
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
