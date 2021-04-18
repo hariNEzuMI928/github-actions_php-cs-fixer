@@ -28,14 +28,14 @@ jobs:
       - name: check syntax error
         run: |
           if
-            git diff --name-only --diff-filter=ACMR origin/master..HEAD *.php | \
+            git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} *.php | \
             xargs -n1 -P4 php -l | \
             grep -v "No syntax errors detected";
             then exit 1;
           fi
       - name: execute php-cs-fixer
         run: |
-          git diff --name-only --diff-filter=ACMR origin/master..HEAD *.php | \
+          git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} *.php | \
           grep -v '^manage/views' | \
           xargs -n1 -P4 php-cs-fixer fix --using-cache=no
       - name: Commit and push
