@@ -8,9 +8,10 @@ name: PhpCsFixer
 
 on:
   push:
-    branches: [master]
+    branches: [staging/master]
   pull_request:
     branches: [master]
+    types: [opened, reopened]
 
 jobs:
   php_cs_fixer:
@@ -24,19 +25,16 @@ jobs:
         with:
           php-version: "7.4"
           tools: php-cs-fixer
-      - name: List modified PHP files
-        id: diff
-        run: |
-          echo "::set-output name=diff::$(cat `git diff --name-only --diff-filter=ACMR origin/master..HEAD -- '*.php'`)"
       - name: check syntax error
         run: |
-          if git diff --name-only --diff-filter=ACMR origin/master..HEAD -- '*.php' | \
+          if git diff --name-only --diff-filter=ACMR origin/master..staging -- '*.php' | \
           xargs -n1 -P4 php -l | \
           grep -v "No syntax errors detected"; then exit 1; fi
-      - name: "Run PHPCSFixer checks"
-        run: if [ "$DIFF" != '' ]; then php-cs-fixer fix --using-cache=no --config=.php_cs; fi
-        env:
-          DIFF: ${{ steps.diff.outputs.diff }}
+      - name: execute php-cs-fixer
+        run: |
+          git diff --name-only --diff-filter=ACMR origin/master..staging *.php | \
+          grep -v '^manage/views' | \
+          xargs -n1 -P4 php-cs-fixer fix --using-cache=no
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
