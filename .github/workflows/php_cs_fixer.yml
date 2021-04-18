@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{github.event.pull_request.head.ref}}
+          ref: staging
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
         with:
@@ -27,7 +27,8 @@ jobs:
           tools: php-cs-fixer
       - name: check target files
         run: |
-          git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF}
+          git status
+          git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF}
       # - name: check syntax error
       #   run: |
       #     if
