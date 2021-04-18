@@ -11,7 +11,7 @@ on:
     branches: [staging/master]
   pull_request:
     branches: [master]
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
 
 jobs:
   php_cs_fixer:
@@ -27,12 +27,15 @@ jobs:
           tools: php-cs-fixer
       - name: check syntax error
         run: |
-          if git diff --name-only --diff-filter=ACMR origin/master..staging -- '*.php' | \
-          xargs -n1 -P4 php -l | \
-          grep -v "No syntax errors detected"; then exit 1; fi
+          if
+            git diff --name-only --diff-filter=ACMR origin/master..HEAD *.php | \
+            xargs -n1 -P4 php -l | \
+            grep -v "No syntax errors detected";
+            then exit 1;
+          fi
       - name: execute php-cs-fixer
         run: |
-          git diff --name-only --diff-filter=ACMR origin/master..staging *.php | \
+          git diff --name-only --diff-filter=ACMR origin/master..HEAD *.php | \
           grep -v '^manage/views' | \
           xargs -n1 -P4 php-cs-fixer fix --using-cache=no
       - name: Commit and push
