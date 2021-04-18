@@ -19,25 +19,28 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{github.head_ref}}
+          ref: ${{github.event.pull_request.head.ref}}
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
         with:
           php-version: "7.4"
           tools: php-cs-fixer
-      - name: check syntax error
+      - name: check target files
         run: |
-          if
-            git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF} *.php | \
-            xargs -n1 -P4 php -l | \
-            grep -v "No syntax errors detected";
-            then exit 1;
-          fi
-      - name: execute php-cs-fixer
-        run: |
-          git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF} *.php | \
-          grep -v '^manage/views' | \
-          xargs -n1 -P4 php-cs-fixer fix --using-cache=no
+          git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF}
+      # - name: check syntax error
+      #   run: |
+      #     if
+      #       git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF} *.php | \
+      #       xargs -n1 -P4 php -l | \
+      #       grep -v "No syntax errors detected";
+      #       then exit 1;
+      #     fi
+      # - name: execute php-cs-fixer
+      #   run: |
+      #     git diff --name-only --diff-filter=ACMR origin/${GITHUB_BASE_REF} *.php | \
+      #     grep -v '^manage/views' | \
+      #     xargs -n1 -P4 php-cs-fixer fix --using-cache=no
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
