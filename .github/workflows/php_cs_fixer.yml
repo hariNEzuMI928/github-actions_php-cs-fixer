@@ -1,6 +1,26 @@
 name: PhpCsFixer
 
-on: [push, pull_request]
+on:
+  # フェーズ１
+  # push:
+  #   branches:
+  #     - master
+  # pull_request:
+  #   branches: [release/master]
+  #   types: [opened, reopened, synchronize]
+
+  # フェーズ２
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: [staging/master]
+    types: [opened, reopened]
+
+  # PRレビュー用
+  # pull_request:
+  #   branches-ignore:
+  #     - '**'
 
 jobs:
   php_cs_fixer:
@@ -18,13 +38,13 @@ jobs:
       - name: check syntax error
         run: |
           if git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR *.php | \
-          xargs -n1 -P4 php -l | \
+          xargs -n1 -P4 -r php -l | \
           grep -v "No syntax errors detected"; then exit 1; fi
       - name: execute php-cs-fixer
         run: |
           git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR *.php | \
           grep -v '^manage/views' | \
-          xargs -n1 -P4 php-cs-fixer fix --using-cache=no
+          xargs -n1 -P4 -r php-cs-fixer fix --using-cache=no
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
