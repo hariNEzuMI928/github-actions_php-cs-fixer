@@ -1,6 +1,7 @@
 name: PhpCsFixer
 
-on:
+on: [push, pull_request]
+
   # フェーズ１
   # push:
   #   branches:
@@ -10,12 +11,12 @@ on:
   #   types: [opened, reopened, synchronize]
 
   # フェーズ２
-  push:
-    branches:
-      - master
-  pull_request:
-    branches: [staging/master]
-    types: [opened, reopened]
+  # push:
+  #   branches:
+  #     - master
+  # pull_request:
+  #   branches: [staging/master]
+  #   types: [opened, reopened]
 
   # PRレビュー用
   # pull_request:
