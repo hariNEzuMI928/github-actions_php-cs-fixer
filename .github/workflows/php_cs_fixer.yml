@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened]
     paths: ['**.php']
-    # branches: [staging/master]
+    branches: [master]
 
   # フェーズ１
   # push:
