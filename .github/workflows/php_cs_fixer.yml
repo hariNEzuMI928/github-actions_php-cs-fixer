@@ -5,6 +5,7 @@ on:
     paths: ['**.php']
   pull_request:
     paths: ['**.php']
+    types: [opened]
 
   # フェーズ１
   # push:
