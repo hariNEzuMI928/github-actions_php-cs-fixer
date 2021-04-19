@@ -1,11 +1,12 @@
 name: PhpCsFixer
 
 on:
-  push:
-    paths: ['**.php']
+  # push:
+  #   paths: ['**.php']
   pull_request:
-    paths: ['**.php']
     types: [opened]
+    paths: ['**.php']
+    branches: [release/master]
 
   # フェーズ１
   # push:
