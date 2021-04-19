@@ -1,16 +1,26 @@
 name: PhpCsFixer
 
-# on:
-#   push:
-#     branches: [staging/master]
-#   pull_request: # フェーズ3ではプルリク作成時に実行
-#     types: [opened]
-
 on:
+  # フェーズ１
+  # push:
+  #   branches:
+  #     - master
+  # pull_request:
+  #   branches: [release/master]
+  #   types: [opened, reopened, synchronize]
+
+  # フェーズ２
   push:
-    branches: [master]
+    branches:
+      - master
   pull_request:
-    branches: [master]
+    branches: [staging/master]
+    types: [opened, reopened]
+
+  # PRレビュー用
+  # pull_request:
+  #   branches-ignore:
+  #     - '**'
 
 jobs:
   php_cs_fixer:
@@ -19,24 +29,22 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{github.head_ref}}
+          fetch-depth: 0
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
         with:
           php-version: "7.4"
           tools: php-cs-fixer
-      - name: List modified PHP files
-        id: diff
-        run: |
-          echo "::set-output name=diff::$(cat `git diff --name-only --diff-filter=ACMR origin/master..HEAD -- '*.php'`)"
       - name: check syntax error
         run: |
-          if git diff --name-only --diff-filter=ACMR origin/master..HEAD -- '*.php' | \
-          xargs -n1 -P4 php -l | \
+          if git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR *.php | \
+          xargs -n1 -P4 -r php -l | \
           grep -v "No syntax errors detected"; then exit 1; fi
-      - name: "Run PHPCSFixer checks"
-        run: if [ "$DIFF" != '' ]; then php-cs-fixer fix --using-cache=no --config=.php_cs; fi
-        env:
-          DIFF: ${{ steps.diff.outputs.diff }}
+      - name: execute php-cs-fixer
+        run: |
+          git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR *.php | \
+          grep -v '^manage/views' | \
+          xargs -n1 -P4 -r php-cs-fixer fix --using-cache=no
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
