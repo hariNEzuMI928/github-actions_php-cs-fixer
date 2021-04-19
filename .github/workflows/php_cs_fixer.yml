@@ -13,7 +13,7 @@ jobs:
       HEAD_BRANCH: staging # PR元のブランチ
     steps:
       - name: Check base branch
-        if: github.head_ref != ${env.HEAD_BRANCH}
+        if: ${{ github.head_ref != env.HEAD_BRANCH }}
         run: exit 1
       - uses: actions/checkout@v2
         with:
