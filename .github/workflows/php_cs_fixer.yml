@@ -1,6 +1,10 @@
 name: PhpCsFixer
 
-on: [push, pull_request]
+on:
+  push:
+    paths: ['**.php']
+  pull_request:
+    paths: ['**.php']
 
   # フェーズ１
   # push:
