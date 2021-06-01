@@ -27,14 +27,14 @@ jobs:
       - name: check syntax error
         shell: bash -xe {0}
         run: |
-          if git diff origin/${{github.head_ref}}..origin/master --name-only --diff-filter=ACMR *.php | \
+          if git diff origin/${{github.event.inputs.ref}}..origin/master --name-only --diff-filter=ACMR *.php | \
           xargs -n1 -P4 php -l | \
           grep -v "No syntax errors detected"; then exit 1; fi
       # 3. php-cs-fixer実行
       - name: execute php-cs-fixer
         shell: bash -xe {0}
         run: |
-          git diff origin/${{github.head_ref}}..origin/master --name-only --diff-filter=ACMR *.php | \
+          git diff origin/${{github.event.inputs.ref}}..origin/master --name-only --diff-filter=ACMR *.php | \
           grep -v '^manage/views' | \
           xargs -n1 -P4 php-cs-fixer fix --using-cache=no
       # 4. commit
