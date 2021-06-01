@@ -25,14 +25,16 @@ jobs:
       # 2. 構文チェック
       # （厳密な静的解析はpre-commitで確認する. ここではあくまで整形可能かどうかの確認なので、ここで失敗した場合に開発者側で何かするという必要はない.）
       - name: check syntax error
+        shell: bash -xe {0}
         run: |
-          if git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR *.php | \
+          if git diff origin/${{github.head_ref}}..origin/master --name-only --diff-filter=ACMR *.php | \
           xargs -n1 -P4 php -l | \
           grep -v "No syntax errors detected"; then exit 1; fi
       # 3. php-cs-fixer実行
       - name: execute php-cs-fixer
+        shell: bash -xe {0}
         run: |
-          git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR *.php | \
+          git diff origin/${{github.head_ref}}..origin/master --name-only --diff-filter=ACMR *.php | \
           grep -v '^manage/views' | \
           xargs -n1 -P4 php-cs-fixer fix --using-cache=no
       # 4. commit
