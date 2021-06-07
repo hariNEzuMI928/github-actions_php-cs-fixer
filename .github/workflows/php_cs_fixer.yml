@@ -15,7 +15,7 @@ jobs:
       # 1. 実行環境準備
       - uses: actions/checkout@v2
         with:
-          ref: ${{github.head_ref}}
+          ref: staging
           fetch-depth: 0
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
@@ -26,7 +26,8 @@ jobs:
       - name: PRD check diff
         id: git_diff
         run: |
-          git_diff_files=$(git diff origin/master..origin/HEAD --name-only --diff-filter=ACMR "*.php" | \
+          git fetch origin staging
+          git_diff_files=$(git diff origin/master..origin/staging --name-only --diff-filter=ACMR "*.php" | \
           grep -v '^manage/views')
           echo "::set-output name=GIT_DIFF::$git_diff_files"
       # 2. 構文チェック
