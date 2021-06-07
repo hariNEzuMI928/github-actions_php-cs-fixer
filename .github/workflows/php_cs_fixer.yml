@@ -47,6 +47,7 @@ jobs:
           xargs -n1 -P4 php-cs-fixer fix --using-cache=no
       # 4. commit
       - name: Commit and push
+        if: ${{ steps.git_diff.outputs.GIT_DIFF }}
         uses: stefanzweifel/git-auto-commit-action@v4.2.0
         with:
           commit_message: pxp-cs-fixer by Github Actions
