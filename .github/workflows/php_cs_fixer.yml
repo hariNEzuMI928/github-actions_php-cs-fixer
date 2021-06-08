@@ -23,11 +23,10 @@ jobs:
           php-version: "7.2"
           tools: php-cs-fixer
       # 差分確認
-      - name: PRD check diff
+      - name: check diff
         id: git_diff
         run: |
-          git fetch origin staging
-          git_diff_files=$(git diff origin/master..origin/staging --name-only --diff-filter=ACMR "*.php" | \
+          git_diff_files=$(git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR "*.php" | \
           grep -v '^manage/views')
           echo "::set-output name=GIT_DIFF::$git_diff_files"
       # 2. 構文チェック
