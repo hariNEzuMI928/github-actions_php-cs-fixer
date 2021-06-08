@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened, reopened]
     paths: ["**.php"]
-    branches: [master] # PR先のブランチ
+    branches: [master, staging] # PR先のブランチ
 
 jobs:
   php_cs_fixer:
@@ -15,12 +15,8 @@ jobs:
       # 1. 実行環境準備
       - uses: actions/checkout@v2
         with:
-          ref: ${{github.head_ref}}
+          ref: staging
           fetch-depth: 0
-      - name: Fetch
-        shell: bash -xe {0}
-        run: |
-          git fetch --depth 1 origin staging
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
         with:
@@ -31,15 +27,14 @@ jobs:
       - name: check syntax error
         shell: bash -xe {0}
         run: |
-          if git diff origin/master...origin/staging --name-only --diff-filter=ACMR *.php | \
+          if git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR "*.php"  | \
           xargs -n1 -P4 php -l | \
           grep -v "No syntax errors detected"; then exit 1; fi
       # 3. php-cs-fixer実行
       - name: execute php-cs-fixer
         shell: bash -xe {0}
         run: |
-          git diff origin/master...origin/staging --name-only --diff-filter=ACMR *.php | \
-          grep -v '^manage/views' | \
+          git diff origin/${GITHUB_BASE_REF}..origin/${GITHUB_HEAD_REF} --name-only --diff-filter=ACMR "*.php"  | \
           xargs -n1 -P4 php-cs-fixer fix --using-cache=no
       # 4. commit
       - name: Commit and push
